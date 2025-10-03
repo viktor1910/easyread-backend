@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "motoparts-api-complete-collection",
 		"name": "MotoParts Complete API Collection",
-		"description": "Complete API collection for MotoParts Django REST Framework application with authentication, categories, parts, carts, orders, and transactions management.",
+		"description": "Complete API collection for MotoParts Django REST Framework application with authentication, categories, motorcycle parts, carts, orders, and transactions management. Supports user registration/login, category management, parts catalog, shopping cart functionality, order processing, and payment transactions.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"auth": {
@@ -61,7 +61,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"password\": \"testpass123\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"User\",\n    \"role\": \"user\"\n}"
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"password_confirmation\": \"SecurePass123!\",\n    \"role\": \"user\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/users/register/",
@@ -74,7 +74,7 @@
 								""
 							]
 						},
-						"description": "Register a new user account"
+						"description": "Register a new user account. Requires name, email, password, password_confirmation, and optional role (defaults to 'user'). Returns user data and success message."
 					}
 				},
 				{
@@ -107,7 +107,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"testpass123\"\n}"
+							"raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"SecurePass123!\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/users/login/",
@@ -120,7 +120,7 @@
 								""
 							]
 						},
-						"description": "Login user and get authentication token"
+						"description": "Login user with email and password. Returns authentication token and user details. Token is automatically saved to collection variables for subsequent requests."
 					}
 				},
 				{
@@ -196,7 +196,7 @@
 								""
 							]
 						},
-						"description": "Get list of all categories"
+						"description": "Get list of all categories with pagination support. Returns categories with motoparts_count. Supports search by name/slug and ordering by name/created_at."
 					}
 				},
 				{
@@ -215,7 +215,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Engine Parts\",\n    \"slug\": \"engine-parts\",\n    \"image\": \"https://example.com/engine-parts.jpg\"\n}"
+							"raw": "{\n    \"name\": \"Motorcycle Electronics\",\n    \"slug\": \"motorcycle-electronics\",\n    \"image\": \"https://example.com/motorcycle-electronics.jpg\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/categories/",
@@ -227,7 +227,7 @@
 								""
 							]
 						},
-						"description": "Create a new category"
+						"description": "Create a new category (Admin only). Requires name, slug, and optional image URL. Returns created category with ID and timestamps."
 					}
 				},
 				{
@@ -336,7 +336,7 @@
 								""
 							]
 						},
-						"description": "Get list of all motorcycle parts"
+						"description": "Get list of all motorcycle parts with pagination, filtering and search support. Returns parts with category details, discounted_price, and availability status."
 					}
 				},
 				{
@@ -355,7 +355,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Honda CBR Engine Piston\",\n    \"slug\": \"honda-cbr-engine-piston\",\n    \"price\": 150.99,\n    \"discount\": 10.0,\n    \"stock\": 25,\n    \"status\": \"active\",\n    \"description\": \"High-quality engine piston for Honda CBR series\",\n    \"image_url\": \"https://example.com/piston.jpg\",\n    \"category_id\": 1,\n    \"manufacture_year\": 2023,\n    \"supplier\": \"Honda Official Parts\"\n}"
+							"raw": "{\n    \"name\": \"Yamaha R15 Brake Disc\",\n    \"slug\": \"yamaha-r15-brake-disc\",\n    \"price\": 89.99,\n    \"discount\": 5.0,\n    \"stock\": 50,\n    \"status\": \"active\",\n    \"description\": \"Original brake disc for Yamaha R15 motorcycle\",\n    \"image_url\": \"https://example.com/brake-disc.jpg\",\n    \"category_id\": 1,\n    \"manufacture_year\": 2024,\n    \"supplier\": \"Yamaha Motor Parts\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/motoparts/",
@@ -367,7 +367,7 @@
 								""
 							]
 						},
-						"description": "Create a new motorcycle part"
+						"description": "Create a new motorcycle part (Admin only). Requires name, slug, price, stock, category_id, manufacture_year, and supplier. Returns created part with calculated fields like discounted_price and is_available."
 					}
 				}
 			],
@@ -396,7 +396,7 @@
 								""
 							]
 						},
-						"description": "Get all carts for current user"
+						"description": "Get all carts for current authenticated user with items_count and subtotal. Returns cart status, created/updated timestamps."
 					}
 				},
 				{
@@ -442,7 +442,7 @@
 								""
 							]
 						},
-						"description": "Create a new cart"
+						"description": "Create a new cart for the authenticated user. Status defaults to 'active'. Cart ID is automatically saved to collection variables."
 					}
 				},
 				{
@@ -466,7 +466,7 @@
 								""
 							]
 						},
-						"description": "Get user's active cart"
+						"description": "Get user's currently active cart with items_count and subtotal. Returns cart details or creates new cart if none exists."
 					}
 				},
 				{
@@ -490,7 +490,7 @@
 								""
 							]
 						},
-						"description": "Get specific cart details"
+						"description": "Get specific cart details by cart ID including all cart items, subtotal, and items_count. User can only access their own carts."
 					}
 				},
 				{
@@ -523,7 +523,7 @@
 								""
 							]
 						},
-						"description": "Checkout cart and create order"
+						"description": "Checkout cart and create order. Requires shipping_address and payment_method. Changes cart status to 'checked_out' and creates corresponding order."
 					}
 				}
 			],
@@ -555,7 +555,7 @@
 								""
 							]
 						},
-						"description": "Get all items in a specific cart"
+						"description": "Get all items in a specific cart with motopart details, quantities, unit_price, and total. Returns cart items with nested motopart information."
 					}
 				},
 				{
@@ -589,7 +589,7 @@
 								""
 							]
 						},
-						"description": "Add item to cart"
+						"description": "Add item to cart or update quantity if item already exists. Requires motopart_id and quantity. Prevents duplicate items by updating existing cart item."
 					}
 				},
 				{
@@ -625,7 +625,7 @@
 								""
 							]
 						},
-						"description": "Update quantity of item in cart"
+						"description": "Update quantity of specific item in cart. Requires quantity in request body. Quantity must be positive integer, minimum value is 1."
 					}
 				},
 				{
@@ -653,7 +653,7 @@
 								""
 							]
 						},
-						"description": "Remove specific item from cart"
+						"description": "Remove specific item from cart by item ID. Completely deletes the cart item entry."
 					}
 				},
 				{
@@ -679,7 +679,7 @@
 								""
 							]
 						},
-						"description": "Clear all items from cart"
+						"description": "Clear all items from cart. Removes all cart items but keeps the cart itself. Cart subtotal and items_count become 0."
 					}
 				},
 				{
@@ -706,7 +706,7 @@
 								""
 							]
 						},
-						"description": "Get specific cart item details"
+						"description": "Get specific cart item details including motopart information, quantity, unit_price, and total amount."
 					}
 				}
 			],
@@ -735,7 +735,7 @@
 								""
 							]
 						},
-						"description": "Get all orders"
+						"description": "Get all orders with pagination. Returns orders with status, total_amount, shipping_address, and timestamps. Supports filtering and ordering."
 					}
 				},
 				{
@@ -768,7 +768,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"shipping_address\": \"123 Main St, City, State 12345\",\n    \"total_amount\": 299.99,\n    \"status\": \"pending\"\n}"
+							"raw": "{\n    \"shipping_address\": \"456 Oak Avenue, Springfield, IL 62701\",\n    \"billing_address\": \"456 Oak Avenue, Springfield, IL 62701\",\n    \"total_amount\": 189.99,\n    \"notes\": \"Please deliver during business hours\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/orders/",
@@ -780,7 +780,7 @@
 								""
 							]
 						},
-						"description": "Create a new order"
+						"description": "Create a new order for authenticated user. Requires shipping_address and total_amount. Status defaults to 'pending'. Order ID is saved to collection variables."
 					}
 				},
 				{
@@ -804,7 +804,7 @@
 								""
 							]
 						},
-						"description": "Get current user's orders"
+						"description": "Get current authenticated user's orders with pagination. Returns user's order history with status, amounts, addresses, and timestamps."
 					}
 				},
 				{
@@ -861,7 +861,7 @@
 								""
 							]
 						},
-						"description": "Update order status"
+						"description": "Update order status. Available statuses: pending, confirmed, processing, shipped, delivered, cancelled, refunded. Usually used by admin or automated systems."
 					}
 				},
 				{
@@ -885,7 +885,7 @@
 								""
 							]
 						},
-						"description": "Get all orders (Admin only)"
+						"description": "Get all orders across all users (Admin only). Returns comprehensive order data with user information, status, amounts, and timestamps."
 					}
 				}
 			],
@@ -914,7 +914,7 @@
 								""
 							]
 						},
-						"description": "Get all order items"
+						"description": "Get all order items with pagination. Returns order items with motopart details, quantity, unit_price, and calculated total."
 					}
 				},
 				{
@@ -933,7 +933,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"order_id\": 1,\n    \"motopart_id\": 1,\n    \"quantity\": 2,\n    \"price\": 150.99\n}"
+							"raw": "{\n    \"order_id\": 1,\n    \"motopart_id\": 1,\n    \"quantity\": 2,\n    \"unit_price\": 89.99\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/orderitems/",
@@ -945,7 +945,7 @@
 								""
 							]
 						},
-						"description": "Create a new order item"
+						"description": "Create a new order item. Requires order_id, motopart_id, quantity, and unit_price. Total is automatically calculated from quantity * unit_price."
 					}
 				},
 				{
@@ -1142,7 +1142,7 @@
 								""
 							]
 						},
-						"description": "Get all transactions"
+						"description": "Get all transactions with pagination. Returns transaction details including status, amount, payment_method, payment_gateway, and timestamps."
 					}
 				},
 				{
@@ -1161,7 +1161,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"order_id\": 1,\n    \"transaction_id\": \"TXN_20241002_001\",\n    \"amount\": 299.99,\n    \"payment_method\": \"credit_card\",\n    \"status\": \"pending\"\n}"
+							"raw": "{\n    \"order_id\": 1,\n    \"transaction_id\": \"TXN_20241003_001\",\n    \"amount\": 189.99,\n    \"currency\": \"USD\",\n    \"payment_method\": \"credit_card\",\n    \"payment_gateway\": \"stripe\",\n    \"payment_reference\": \"pi_1234567890\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/transactions/",
@@ -1173,7 +1173,7 @@
 								""
 							]
 						},
-						"description": "Create a new transaction"
+						"description": "Create a new transaction. Requires order_id, transaction_id, amount, payment_method. Optional: currency, payment_gateway, payment_reference."
 					}
 				},
 				{
@@ -1197,7 +1197,7 @@
 								""
 							]
 						},
-						"description": "Get current user's transactions"
+						"description": "Get current authenticated user's transactions with pagination. Returns user's transaction history with payment details and order information."
 					}
 				},
 				{
@@ -1221,7 +1221,7 @@
 								""
 							]
 						},
-						"description": "Get transaction statistics"
+						"description": "Get transaction statistics including total transactions, revenue, success rate, and payment method distribution."
 					}
 				},
 				{
@@ -1255,7 +1255,7 @@
 								}
 							]
 						},
-						"description": "Search transactions with filters"
+						"description": "Search transactions with filters. Supports filtering by status, amount range, payment method, date range, and user. Example filters: status=completed&amount_min=100&amount_max=500"
 					}
 				},
 				{
@@ -1280,7 +1280,7 @@
 								""
 							]
 						},
-						"description": "Get transaction by transaction ID"
+						"description": "Get transaction details by unique transaction ID. Returns complete transaction information including payment gateway response and order details."
 					}
 				},
 				{
@@ -1314,7 +1314,7 @@
 								""
 							]
 						},
-						"description": "Update transaction status"
+						"description": "Update transaction status. Available statuses: pending, completed, failed, cancelled, refunded. Usually called by payment gateway webhooks or admin."
 					}
 				},
 				{
@@ -1333,7 +1333,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"order_id\": 1,\n    \"payment_method\": \"credit_card\",\n    \"payment_details\": {\n        \"card_number\": \"**** **** **** 1234\",\n        \"cardholder_name\": \"John Doe\",\n        \"expiry_date\": \"12/25\"\n    }\n}"
+							"raw": "{\n    \"order_id\": 1,\n    \"payment_method\": \"credit_card\",\n    \"payment_gateway\": \"stripe\",\n    \"payment_details\": {\n        \"card_number\": \"**** **** **** 4242\",\n        \"cardholder_name\": \"John Doe\",\n        \"expiry_date\": \"12/25\",\n        \"cvv\": \"***\"\n    }\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/transactions/process-payment/",
@@ -1346,7 +1346,7 @@
 								""
 							]
 						},
-						"description": "Process payment for an order"
+						"description": "Process payment for an order. Handles payment gateway integration and creates transaction record. Requires order_id, payment_method, and payment_details."
 					}
 				},
 				{
@@ -1370,7 +1370,7 @@
 								""
 							]
 						},
-						"description": "Get specific transaction details"
+						"description": "Get specific transaction details by database ID. Returns complete transaction information including related order and payment gateway data."
 					}
 				}
 			],

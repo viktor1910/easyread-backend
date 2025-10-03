@@ -47,9 +47,12 @@ INSTALLED_APPS = [
     'transactions',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -148,7 +151,36 @@ REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
 }
 
 # CORS settings để cho phép JavaScript từ frontend gọi API
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
+
+# CORS Headers Configuration
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Frontend Vite dev server
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",  # Alternative frontend port
+    "http://127.0.0.1:3000",
+]
+
+# Allow all origins for development (less secure, only for development)
+CORS_ALLOW_ALL_ORIGINS = True
+
+# Allow credentials to be included in CORS requests
+CORS_ALLOW_CREDENTIALS = True
+
+# Allowed headers
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]

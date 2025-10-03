@@ -1,10 +1,12 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, filters
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Order
+from .pagination import OrderPagination, OrderAdminPagination
 from .serializers import (
     OrderSerializer,
     OrderCreateSerializer,
@@ -18,6 +20,12 @@ from user.permissions import IsAdminUser
 class OrderListCreateView(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = OrderPagination
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['status', 'user']
+    search_fields = ['user__email', 'user__first_name', 'user__last_name', 'shipping_address']
+    ordering_fields = ['created_at', 'updated_at', 'total_amount', 'status']
+    ordering = ['-created_at']  # Default ordering
 
     def get_queryset(self):
         if self.request.user.is_staff:
@@ -66,6 +74,12 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
 class OrderListAdminView(generics.ListAPIView):
     serializer_class = OrderListSerializer
     permission_classes = [IsAdminUser]
+    pagination_class = OrderAdminPagination
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['status', 'user', 'created_at']
+    search_fields = ['user__email', 'user__first_name', 'user__last_name', 'id', 'shipping_address']
+    ordering_fields = ['created_at', 'updated_at', 'total_amount', 'status', 'user__email']
+    ordering = ['-created_at']  # Default ordering
 
     def get_queryset(self):
         return Order.objects.all()
@@ -74,9 +88,33 @@ class OrderListAdminView(generics.ListAPIView):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_orders(request):
-    queryset = Order.objects.filter(user=request.user)
-    serializer = OrderListSerializer(queryset, many=True)
-    return Response(serializer.data)
+    """
+    Get user's orders with pagination support
+    This endpoint is deprecated - use OrderListCreateView instead
+    """
+    queryset = Order.objects.filter(user=request.user).order_by('-created_at')
+    
+    # Simple pagination for function-based view
+    page_size = int(request.GET.get('page_size', 10))
+    page = int(request.GET.get('page', 1))
+    
+    start = (page - 1) * page_size
+    end = start + page_size
+    
+    total_count = queryset.count()
+    orders = queryset[start:end]
+    
+    serializer = OrderListSerializer(orders, many=True)
+    
+    return Response({
+        'pagination': {
+            'count': total_count,
+            'current_page': page,
+            'page_size': page_size,
+            'total_pages': (total_count + page_size - 1) // page_size,
+        },
+        'results': serializer.data
+    })
 
 
 @api_view(['PUT'])

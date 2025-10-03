@@ -1,13 +1,20 @@
 from django.shortcuts import render
 from .models import Category
-from rest_framework import generics
+from rest_framework import generics, filters
 from rest_framework.permissions import AllowAny
 from .serializers import CategorySerializer
+from .pagination import CategoryPagination
 from user.permissions import IsAdminUser
+from django_filters.rest_framework import DjangoFilterBackend
 
 class CategoryListView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    pagination_class = CategoryPagination
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'slug']
+    ordering_fields = ['name', 'created_at']
+    ordering = ['-created_at']  # Default ordering
     
     def get_permissions(self):
         """
