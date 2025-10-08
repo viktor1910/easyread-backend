@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import Category
 from rest_framework import generics, filters
 from rest_framework.permissions import AllowAny
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .serializers import CategorySerializer
 from .pagination import CategoryPagination
 from user.permissions import IsAdminUser
@@ -11,11 +12,12 @@ class CategoryListView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = CategoryPagination
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'slug']
     ordering_fields = ['name', 'created_at']
     ordering = ['-created_at']  # Default ordering
-    
+
     def get_permissions(self):
         """
         GET: Không cần permission (public access)
@@ -30,7 +32,8 @@ class CategoryListView(generics.ListCreateAPIView):
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
     def get_permissions(self):
         """
         GET: Không cần permission (public access)

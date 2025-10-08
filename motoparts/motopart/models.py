@@ -8,7 +8,7 @@ class Motopart(models.Model):
         ('inactive', 'Inactive'),
         ('out_of_stock', 'Out of Stock'),
     ]
-    
+
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     price = models.FloatField()
@@ -16,7 +16,8 @@ class Motopart(models.Model):
     stock = models.IntegerField(default=0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     description = models.TextField(blank=True, null=True)
-    image_url = models.URLField(blank=True, null=True)
+    image = models.ImageField(upload_to='motoparts/', blank=True, null=True)
+    image_url = models.URLField(blank=True, null=True)  # Keep for backward compatibility
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='motoparts')
     manufacture_year = models.IntegerField()
     supplier = models.CharField(max_length=255)
@@ -40,3 +41,11 @@ class Motopart(models.Model):
     def is_available(self):
         """Check if motopart is available for purchase"""
         return self.status == 'active' and self.stock > 0
+
+    @property
+    def image_full_url(self):
+        """Return full URL for the image, prioritizing uploaded image over URL"""
+        if self.image:
+            from django.conf import settings
+            return f"{settings.SITE_URL}{self.image.url}" if hasattr(self.image, 'url') else None
+        return self.image_url

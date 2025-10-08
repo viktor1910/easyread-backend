@@ -56,7 +56,15 @@ class CartItemDetailView(generics.RetrieveUpdateDestroyAPIView):
 @permission_classes([IsAuthenticated])
 def add_to_cart(request, cart_id):
     """Add item to cart"""
-    cart = get_object_or_404(Cart, id=cart_id, user=request.user)
+    # Get cart or create if doesn't exist
+    try:
+        cart = Cart.objects.get(id=cart_id, user=request.user)
+    except Cart.DoesNotExist:
+        # If cart doesn't exist, try to find or create active cart
+        cart = Cart.objects.filter(user=request.user, status='active').order_by('-created_at').first()
+        if not cart:
+            # Create new cart if user has no active cart
+            cart = Cart.objects.create(user=request.user, status='active')
     
     motopart_id = request.data.get('motopart_id')
     quantity = request.data.get('quantity', 1)

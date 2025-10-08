@@ -14,6 +14,7 @@ from .serializers import (
     OrderStatusUpdateSerializer,
     OrderListSerializer,
 )
+from .filters import OrderAdminFilter
 from user.permissions import IsAdminUser
 
 
@@ -72,17 +73,28 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class OrderListAdminView(generics.ListAPIView):
-    serializer_class = OrderListSerializer
+    serializer_class = OrderSerializer
     permission_classes = [IsAdminUser]
     pagination_class = OrderAdminPagination
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'user', 'created_at']
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['user__email', 'user__first_name', 'user__last_name', 'id', 'shipping_address']
     ordering_fields = ['created_at', 'updated_at', 'total_amount', 'status', 'user__email']
     ordering = ['-created_at']  # Default ordering
 
     def get_queryset(self):
-        return Order.objects.all()
+        print(f"OrderListAdminView: User {self.request.user.email}, Role: {self.request.user.role}")
+        print(f"OrderListAdminView: Query params: {self.request.GET}")
+        queryset = Order.objects.select_related('user').prefetch_related('items__motopart__category').all()
+        print(f"OrderListAdminView: Found {queryset.count()} orders before filtering")
+
+        # Handle status filtering manually
+        status_values = self.request.GET.getlist('status')
+        if status_values:
+            print(f"OrderListAdminView: Filtering by statuses: {status_values}")
+            queryset = queryset.filter(status__in=status_values)
+            print(f"OrderListAdminView: Found {queryset.count()} orders after status filtering")
+
+        return queryset
 
 
 @api_view(['GET'])

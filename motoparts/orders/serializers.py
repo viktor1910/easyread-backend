@@ -1,18 +1,21 @@
 from rest_framework import serializers
 from .models import Order
 from user.serializers import UserReadSerializer
+from orderitem.serializers import OrderItemSerializer
 
 
 class OrderSerializer(serializers.ModelSerializer):
     user = UserReadSerializer(read_only=True)
+    items = OrderItemSerializer(many=True, read_only=True)
+    total_price = serializers.DecimalField(source='total_amount', max_digits=10, decimal_places=2, read_only=True)
 
     class Meta:
         model = Order
         fields = [
-            'id', 'user', 'status', 'total_amount', 'shipping_address',
-            'billing_address', 'notes', 'created_at', 'updated_at'
+            'id', 'user', 'status', 'total_amount', 'total_price', 'shipping_address',
+            'billing_address', 'notes', 'created_at', 'updated_at', 'items'
         ]
-        read_only_fields = ['id', 'user', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'user', 'created_at', 'updated_at', 'total_price', 'items']
 
 
 class OrderCreateSerializer(serializers.ModelSerializer):

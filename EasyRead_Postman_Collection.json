@@ -1,11 +1,11 @@
 {
   "info": {
-    "name": "EasyRead Motoparts API",
-    "description": "Complete API collection for EasyRead Motoparts e-commerce system",
+    "name": "MotoShop API",
+    "description": "Complete API collection for MotoShop - Motorcycle Parts E-commerce System",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_postman_id": "easyread-motoparts-api",
+    "_postman_id": "motoshop-api",
     "version": {
-      "major": 1,
+      "major": 2,
       "minor": 0,
       "patch": 0
     }
@@ -13,7 +13,7 @@
   "variable": [
     {
       "key": "base_url",
-      "value": "http://localhost:8000",
+      "value": "http://127.0.0.1:8000",
       "type": "string"
     },
     {
@@ -48,7 +48,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"SecurePassword123!\",\n  \"password_confirmation\": \"SecurePassword123!\",\n  \"role\": \"user\"\n}"
+              "raw": "{\n  \"name\": \"Nguyen Van A\",\n  \"email\": \"nguyenvana@example.com\",\n  \"password\": \"SecurePassword123!\",\n  \"password_confirmation\": \"SecurePassword123!\",\n  \"role\": \"user\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/users/register/",
@@ -70,7 +70,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"SecurePassword123!\"\n}"
+              "raw": "{\n  \"email\": \"nguyenvana@example.com\",\n  \"password\": \"SecurePassword123!\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/users/login/",
@@ -87,7 +87,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -99,13 +99,31 @@
           }
         },
         {
-          "name": "Get All Users",
+          "name": "Get Current User Profile",
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/me/",
+              "host": ["{{base_url}}"],
+              "path": ["users", "me", ""]
+            },
+            "description": "Get current user profile"
+          }
+        },
+        {
+          "name": "Get All Users (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -127,37 +145,67 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/categories/",
+              "raw": "{{base_url}}/categories/?page=1&page_size=20",
               "host": ["{{base_url}}"],
-              "path": ["categories", ""]
+              "path": ["categories", ""],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "page_size",
+                  "value": "20",
+                  "description": "Number of items per page"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search by name or slug",
+                  "disabled": true
+                }
+              ]
             },
-            "description": "Get list of all categories"
+            "description": "Get list of all categories with pagination. Response includes motoparts_count for each category."
           }
         },
         {
-          "name": "Create Category",
+          "name": "Create Category (with file upload)",
           "request": {
             "method": "POST",
             "header": [
               {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Engine Parts\",\n  \"slug\": \"engine-parts\",\n  \"image\": \"https://example.com/engine-parts.jpg\"\n}"
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Phanh",
+                  "type": "text"
+                },
+                {
+                  "key": "slug",
+                  "value": "phanh",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
             },
             "url": {
               "raw": "{{base_url}}/categories/",
               "host": ["{{base_url}}"],
               "path": ["categories", ""]
             },
-            "description": "Create a new category"
+            "description": "Create a new category with image file upload (Admin only)"
           }
         },
         {
@@ -170,33 +218,45 @@
               "host": ["{{base_url}}"],
               "path": ["categories", "1", ""]
             },
-            "description": "Get specific category by ID"
+            "description": "Get specific category by ID with image_full_url"
           }
         },
         {
-          "name": "Update Category",
+          "name": "Update Category (with file upload)",
           "request": {
             "method": "PUT",
             "header": [
               {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Updated Engine Parts\",\n  \"slug\": \"updated-engine-parts\",\n  \"image\": \"https://example.com/updated-engine-parts.jpg\"\n}"
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Phanh Cập Nhật",
+                  "type": "text"
+                },
+                {
+                  "key": "slug",
+                  "value": "phanh-cap-nhat",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
             },
             "url": {
               "raw": "{{base_url}}/categories/1/",
               "host": ["{{base_url}}"],
               "path": ["categories", "1", ""]
             },
-            "description": "Update existing category"
+            "description": "Update existing category with optional new image (Admin only)"
           }
         },
         {
@@ -206,7 +266,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -214,7 +274,7 @@
               "host": ["{{base_url}}"],
               "path": ["categories", "1", ""]
             },
-            "description": "Delete category by ID"
+            "description": "Delete category by ID (Admin only)"
           }
         }
       ]
@@ -228,37 +288,125 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/motoparts/",
+              "raw": "{{base_url}}/motoparts/?page=1&page_size=20",
               "host": ["{{base_url}}"],
-              "path": ["motoparts", ""]
+              "path": ["motoparts", ""],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "page_size",
+                  "value": "20",
+                  "description": "Number of items per page"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search by name, description, supplier",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "description": "Filter by category ID",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "description": "Filter by status",
+                  "disabled": true
+                },
+                {
+                  "key": "ordering",
+                  "value": "-created_at",
+                  "description": "Sort by field (e.g., price, -price, name)",
+                  "disabled": true
+                }
+              ]
             },
-            "description": "Get list of all motoparts with pagination"
+            "description": "Get list of all motoparts with pagination, search, and filters"
           }
         },
         {
-          "name": "Create Motopart",
+          "name": "Create Motopart (with file upload)",
           "request": {
             "method": "POST",
             "header": [
               {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Honda CB150R Engine Oil Filter\",\n  \"slug\": \"honda-cb150r-oil-filter\",\n  \"price\": 25.50,\n  \"discount\": 10.0,\n  \"stock\": 100,\n  \"status\": \"active\",\n  \"description\": \"High quality oil filter for Honda CB150R motorcycle\",\n  \"image_url\": \"https://example.com/oil-filter.jpg\",\n  \"category\": 1,\n  \"manufacture_year\": 2023,\n  \"supplier\": \"Honda Official\"\n}"
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Má phanh trước Honda Air Blade",
+                  "type": "text"
+                },
+                {
+                  "key": "slug",
+                  "value": "ma-phanh-truoc-honda-air-blade",
+                  "type": "text"
+                },
+                {
+                  "key": "price",
+                  "value": "250000",
+                  "type": "text"
+                },
+                {
+                  "key": "discount",
+                  "value": "10",
+                  "type": "text"
+                },
+                {
+                  "key": "stock",
+                  "value": "50",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Má phanh chính hãng Honda cho Air Blade 125/150",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "category",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "manufacture_year",
+                  "value": "2023",
+                  "type": "text"
+                },
+                {
+                  "key": "supplier",
+                  "value": "Honda Việt Nam",
+                  "type": "text"
+                }
+              ]
             },
             "url": {
               "raw": "{{base_url}}/motoparts/",
               "host": ["{{base_url}}"],
               "path": ["motoparts", ""]
             },
-            "description": "Create a new motopart"
+            "description": "Create a new motopart with image file upload (Admin only)"
           }
         },
         {
@@ -271,33 +419,86 @@
               "host": ["{{base_url}}"],
               "path": ["motoparts", "1", ""]
             },
-            "description": "Get specific motopart by ID"
+            "description": "Get specific motopart by ID with full details including image_full_url and discounted_price"
           }
         },
         {
-          "name": "Update Motopart",
+          "name": "Update Motopart (with file upload)",
           "request": {
             "method": "PUT",
             "header": [
               {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Honda CB150R Premium Engine Oil Filter\",\n  \"slug\": \"honda-cb150r-premium-oil-filter\",\n  \"price\": 30.00,\n  \"discount\": 15.0,\n  \"stock\": 150,\n  \"status\": \"active\",\n  \"description\": \"Premium quality oil filter for Honda CB150R motorcycle\",\n  \"image_url\": \"https://example.com/premium-oil-filter.jpg\",\n  \"category\": 1,\n  \"manufacture_year\": 2023,\n  \"supplier\": \"Honda Official\"\n}"
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Má phanh trước Honda Air Blade (Cập nhật)",
+                  "type": "text"
+                },
+                {
+                  "key": "slug",
+                  "value": "ma-phanh-truoc-honda-air-blade-update",
+                  "type": "text"
+                },
+                {
+                  "key": "price",
+                  "value": "280000",
+                  "type": "text"
+                },
+                {
+                  "key": "discount",
+                  "value": "15",
+                  "type": "text"
+                },
+                {
+                  "key": "stock",
+                  "value": "60",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Má phanh chính hãng Honda cho Air Blade 125/150 - Phiên bản mới",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": [],
+                  "description": "Optional: new image file"
+                },
+                {
+                  "key": "category",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "manufacture_year",
+                  "value": "2024",
+                  "type": "text"
+                },
+                {
+                  "key": "supplier",
+                  "value": "Honda Việt Nam",
+                  "type": "text"
+                }
+              ]
             },
             "url": {
               "raw": "{{base_url}}/motoparts/1/",
               "host": ["{{base_url}}"],
               "path": ["motoparts", "1", ""]
             },
-            "description": "Update existing motopart"
+            "description": "Update existing motopart with optional new image (Admin only)"
           }
         },
         {
@@ -307,7 +508,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -315,7 +516,7 @@
               "host": ["{{base_url}}"],
               "path": ["motoparts", "1", ""]
             },
-            "description": "Delete motopart by ID"
+            "description": "Delete motopart by ID (Admin only)"
           }
         }
       ]
@@ -324,21 +525,21 @@
       "name": "Carts",
       "item": [
         {
-          "name": "Get All Carts",
+          "name": "Get Active Cart",
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
-              "raw": "{{base_url}}/carts/",
+              "raw": "{{base_url}}/carts/active/",
               "host": ["{{base_url}}"],
-              "path": ["carts", ""]
+              "path": ["carts", "active", ""]
             },
-            "description": "Get list of all user's carts"
+            "description": "Get current user's active cart with items, subtotal, and items_count"
           }
         },
         {
@@ -348,7 +549,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -360,31 +561,13 @@
           }
         },
         {
-          "name": "Get Active Cart",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/carts/active/",
-              "host": ["{{base_url}}"],
-              "path": ["carts", "active", ""]
-            },
-            "description": "Get current user's active cart"
-          }
-        },
-        {
           "name": "Get Cart by ID",
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -401,16 +584,24 @@
             "method": "POST",
             "header": [
               {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shipping_address\": \"123 Đường ABC, Quận 1, TP.HCM\",\n  \"payment_method\": \"cod\"\n}"
+            },
             "url": {
               "raw": "{{base_url}}/carts/1/checkout/",
               "host": ["{{base_url}}"],
               "path": ["carts", "1", "checkout", ""]
             },
-            "description": "Checkout cart and create order"
+            "description": "Checkout cart and create order. Payment methods: cod, bank_transfer"
           }
         }
       ]
@@ -425,7 +616,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -447,7 +638,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
@@ -463,24 +654,6 @@
           }
         },
         {
-          "name": "Get Cart Item Detail",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/cartitems/cart/1/items/1/",
-              "host": ["{{base_url}}"],
-              "path": ["cartitems", "cart", "1", "items", "1", ""]
-            },
-            "description": "Get specific cart item detail"
-          }
-        },
-        {
           "name": "Update Cart Item Quantity",
           "request": {
             "method": "PUT",
@@ -491,7 +664,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
@@ -513,7 +686,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -531,7 +704,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -548,47 +721,33 @@
       "name": "Orders",
       "item": [
         {
-          "name": "Get All Orders",
+          "name": "Get User Orders",
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
-              "raw": "{{base_url}}/orders/",
+              "raw": "{{base_url}}/orders/?page_size=100",
               "host": ["{{base_url}}"],
-              "path": ["orders", ""]
+              "path": ["orders", ""],
+              "query": [
+                {
+                  "key": "page_size",
+                  "value": "100"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "Filter by status: pending, confirmed, processing, shipped, delivered, cancelled, refunded",
+                  "disabled": true
+                }
+              ]
             },
-            "description": "Get list of all orders"
-          }
-        },
-        {
-          "name": "Create Order",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"shipping_address\": \"123 Main Street, City, Country\",\n  \"payment_method\": \"credit_card\",\n  \"notes\": \"Please handle with care\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/orders/",
-              "host": ["{{base_url}}"],
-              "path": ["orders", ""]
-            },
-            "description": "Create a new order"
+            "description": "Get current user's orders with pagination"
           }
         },
         {
@@ -598,7 +757,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -606,49 +765,13 @@
               "host": ["{{base_url}}"],
               "path": ["orders", "1", ""]
             },
-            "description": "Get specific order by ID"
+            "description": "Get specific order by ID with full details including items"
           }
         },
         {
-          "name": "Get User Orders",
+          "name": "Update Order Status (Admin)",
           "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/orders/me/",
-              "host": ["{{base_url}}"],
-              "path": ["orders", "me", ""]
-            },
-            "description": "Get current user's orders"
-          }
-        },
-        {
-          "name": "Get All Orders (Admin)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/orders/admin/",
-              "host": ["{{base_url}}"],
-              "path": ["orders", "admin", ""]
-            },
-            "description": "Get all orders (admin only)"
-          }
-        },
-        {
-          "name": "Update Order Status",
-          "request": {
-            "method": "PUT",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Content-Type",
@@ -656,88 +779,22 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"status\": \"shipped\"\n}"
+              "raw": "{\n  \"status\": \"confirmed\"\n}"
             },
             "url": {
-              "raw": "{{base_url}}/orders/1/status/",
+              "raw": "{{base_url}}/orders/1/",
               "host": ["{{base_url}}"],
-              "path": ["orders", "1", "status", ""]
+              "path": ["orders", "1", ""]
             },
-            "description": "Update order status (admin only)"
+            "description": "Update order status. Valid statuses: pending, confirmed, processing, shipped, delivered, cancelled, refunded (Admin only)"
           }
         }
       ]
-    },
-    {
-      "name": "Order Items",
-      "item": [
-        {
-          "name": "Get Order Items",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/orderitems/",
-              "host": ["{{base_url}}"],
-              "path": ["orderitems", ""]
-            },
-            "description": "Get list of order items"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Transactions",
-      "item": [
-        {
-          "name": "Get Transactions",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/transactions/",
-              "host": ["{{base_url}}"],
-              "path": ["transactions", ""]
-            },
-            "description": "Get list of transactions"
-          }
-        }
-      ]
-    }
-  ],
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          ""
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          ""
-        ]
-      }
     }
   ]
 }
