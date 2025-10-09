@@ -56,12 +56,7 @@ class CartDetailView(generics.RetrieveUpdateDestroyAPIView):
 def get_active_cart(request):
     """Get user's active cart"""
     try:
-        # Get the most recent active cart if multiple exist
-        cart = Cart.objects.filter(user=request.user, status='active').order_by('-created_at').first()
-        if not cart:
-            return Response({
-                'message': 'No active cart found'
-            }, status=status.HTTP_404_NOT_FOUND)
+        cart = Cart.objects.get(user=request.user, status='active')
         serializer = CartSerializer(cart)
         return Response(serializer.data)
     except Cart.DoesNotExist:

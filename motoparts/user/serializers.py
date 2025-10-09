@@ -76,11 +76,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return user
 
 class UserReadSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(source='first_name', read_only=True)
-
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'role', 'first_name', 'last_name', 'name', 'is_active', 'date_joined']
+        fields = ['id', 'username', 'email', 'role', 'first_name', 'last_name', 'is_active', 'date_joined']
 
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()

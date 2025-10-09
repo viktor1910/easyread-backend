@@ -16,23 +16,14 @@ class UserRegistrationView(generics.CreateAPIView):
     permission_classes = [AllowAny]
     
     def create(self, request, *args, **kwargs):
-        import sys
-        sys.stdout.write(f"\n\nRegistration data received: {request.data}\n\n")
-        sys.stdout.flush()
-
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            token, created = Token.objects.get_or_create(user=user)
             user_data = UserReadSerializer(user).data
             return Response({
                 'message': 'User registered successfully',
-                'user': user_data,
-                'token': token.key
+                'user': user_data
             }, status=status.HTTP_201_CREATED)
-
-        sys.stdout.write(f"\n\nValidation errors: {serializer.errors}\n\n")
-        sys.stdout.flush()
         return Response({
             'message': 'Registration failed',
             'errors': serializer.errors

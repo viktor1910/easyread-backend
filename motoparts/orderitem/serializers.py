@@ -1,23 +1,21 @@
 from rest_framework import serializers
 from .models import OrderItem
 from motopart.models import Motopart
-from motopart.serializers import MotopartSerializer
 from orders.models import Order
 
 class OrderItemSerializer(serializers.ModelSerializer):
     """Serializer for OrderItem model"""
-
-    motopart = MotopartSerializer(read_only=True)
+    
+    motopart_name = serializers.CharField(source='motopart.name', read_only=True)
     order_id = serializers.IntegerField(source='order.id', read_only=True)
-    price = serializers.DecimalField(source='unit_price', max_digits=10, decimal_places=2, read_only=True)
-
+    
     class Meta:
         model = OrderItem
         fields = [
-            'id', 'order', 'order_id', 'motopart',
-            'quantity', 'unit_price', 'price', 'total', 'created_at', 'updated_at'
+            'id', 'order', 'order_id', 'motopart', 'motopart_nam',
+            'quantity', 'unit_price', 'total', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'total', 'created_at', 'updated_at', 'price']
+        read_only_fields = ['id', 'total', 'created_at', 'updated_at']
 
 class OrderItemCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating OrderItem"""
