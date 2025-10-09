@@ -2,7 +2,6 @@ from django.shortcuts import render
 from .models import Motopart
 from rest_framework import generics, filters
 from rest_framework.permissions import AllowAny
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .serializers import MotopartSerializer
 from .pagination import MotopartPagination
 from user.permissions import IsAdminUser
@@ -12,7 +11,6 @@ class MotopartListView(generics.ListCreateAPIView):
     queryset = Motopart.objects.all()
     serializer_class = MotopartSerializer
     pagination_class = MotopartPagination
-    parser_classes = [MultiPartParser, FormParser, JSONParser]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['category', 'status', 'manufacture_year', 'supplier']
     search_fields = ['name', 'description', 'supplier']
@@ -33,7 +31,6 @@ class MotopartListView(generics.ListCreateAPIView):
 class MotopartDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Motopart.objects.all()
     serializer_class = MotopartSerializer
-    parser_classes = [MultiPartParser, FormParser, JSONParser]
     lookup_field = 'pk'  # Can use 'slug' if you prefer slug-based lookups
 
     def get_permissions(self):

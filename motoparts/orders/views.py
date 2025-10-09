@@ -14,6 +14,7 @@ from .serializers import (
     OrderStatusUpdateSerializer,
     OrderListSerializer,
 )
+from .filters import OrderFilter
 from user.permissions import IsAdminUser
 
 
@@ -21,16 +22,20 @@ class OrderListCreateView(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = OrderPagination
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'user']
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['user__email', 'user__first_name', 'user__last_name', 'shipping_address']
     ordering_fields = ['created_at', 'updated_at', 'total_amount', 'status']
     ordering = ['-created_at']  # Default ordering
 
     def get_queryset(self):
-        if self.request.user.is_staff:
-            return Order.objects.all()
-        return Order.objects.filter(user=self.request.user)
+        queryset = Order.objects.all() if self.request.user.is_staff else Order.objects.filter(user=self.request.user)
+
+        # Handle multiple status values from query params
+        status_list = self.request.query_params.getlist('status')
+        if status_list:
+            queryset = queryset.filter(status__in=status_list)
+
+        return queryset
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -75,14 +80,20 @@ class OrderListAdminView(generics.ListAPIView):
     serializer_class = OrderListSerializer
     permission_classes = [IsAdminUser]
     pagination_class = OrderAdminPagination
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'user', 'created_at']
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]  # Removed DjangoFilterBackend
     search_fields = ['user__email', 'user__first_name', 'user__last_name', 'id', 'shipping_address']
     ordering_fields = ['created_at', 'updated_at', 'total_amount', 'status', 'user__email']
     ordering = ['-created_at']  # Default ordering
 
     def get_queryset(self):
-        return Order.objects.all()
+        queryset = Order.objects.all()
+
+        # Handle multiple status values from query params
+        status_list = self.request.query_params.getlist('status')
+        if status_list:
+            queryset = queryset.filter(status__in=status_list)
+
+        return queryset
 
 
 @api_view(['GET'])

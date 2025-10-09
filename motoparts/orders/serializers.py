@@ -1,18 +1,36 @@
 from rest_framework import serializers
 from .models import Order
 from user.serializers import UserReadSerializer
+from motopart.serializers import MotopartSerializer
+
+
+class OrderItemDetailSerializer(serializers.Serializer):
+    """Nested serializer for order items with motopart details"""
+    id = serializers.IntegerField()
+    motopart = MotopartSerializer()
+    quantity = serializers.IntegerField()
+    unit_price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2, source='unit_price')
+    total = serializers.DecimalField(max_digits=10, decimal_places=2)
 
 
 class OrderSerializer(serializers.ModelSerializer):
     user = UserReadSerializer(read_only=True)
+    items = OrderItemDetailSerializer(many=True, read_only=True)
+    total_price = serializers.DecimalField(max_digits=10, decimal_places=2, source='total_amount', read_only=True)
+    payment_method = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = [
-            'id', 'user', 'status', 'total_amount', 'shipping_address',
-            'billing_address', 'notes', 'created_at', 'updated_at'
+            'id', 'user', 'status', 'total_amount', 'total_price', 'shipping_address',
+            'billing_address', 'notes', 'payment_method', 'items', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']
+
+    def get_payment_method(self, obj):
+        # Default to COD for now, can be enhanced later with actual payment tracking
+        return 'cod'
 
 
 class OrderCreateSerializer(serializers.ModelSerializer):
@@ -82,12 +100,18 @@ class OrderStatusUpdateSerializer(serializers.Serializer):
 
 
 class OrderListSerializer(serializers.ModelSerializer):
-    user_email = serializers.CharField(source='user.email', read_only=True)
+    user = UserReadSerializer(read_only=True)
+    total_price = serializers.DecimalField(max_digits=10, decimal_places=2, source='total_amount', read_only=True)
+    payment_method = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = [
-            'id', 'user_email', 'status', 'total_amount', 'created_at'
+            'id', 'user', 'status', 'total_amount', 'total_price', 'shipping_address',
+            'payment_method', 'created_at', 'updated_at'
         ]
+
+    def get_payment_method(self, obj):
+        return 'cod'
 
 
