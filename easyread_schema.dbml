@@ -1,0 +1,127 @@
+// EasyRead Motoparts Database Schema
+
+Table categories {
+  id integer [primary key]
+  name varchar(100)
+  slug varchar(50) [unique]
+  image varchar(100) [note: "Upload path for category images"]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table users {
+  id integer [primary key]
+  username varchar(150) [unique]
+  email varchar(254) [unique]
+  password varchar(128)
+  first_name varchar(150)
+  last_name varchar(150)
+  role varchar(10) [default: "user", note: "Choices: admin, user"]
+  is_staff boolean [default: false]
+  is_active boolean [default: true]
+  is_superuser boolean [default: false]
+  date_joined timestamp
+  last_login timestamp
+  
+  Note: "Custom user model extending AbstractUser"
+}
+
+Table motoparts {
+  id integer [primary key]
+  name varchar(255)
+  slug varchar(50) [unique]
+  price float
+  discount float [default: 0.0]
+  stock integer [default: 0]
+  status varchar(20) [default: "active", note: "Choices: active, inactive, out_of_stock"]
+  description text
+  image varchar(100) [note: "Upload path for motopart images"]
+  image_url varchar(200) [note: "Backward compatibility URL field"]
+  category_id integer [ref: > categories.id]
+  manufacture_year integer
+  supplier varchar(255)
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table carts {
+  id integer [primary key]
+  user_id integer [ref: > users.id]
+  status varchar(20) [default: "active", note: "Choices: active, checked_out"]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table cart_items {
+  id integer [primary key]
+  cart_id integer [ref: > carts.id]
+  motopart_id integer [ref: > motoparts.id]
+  quantity integer [default: 1]
+  created_at timestamp
+  updated_at timestamp
+  
+  indexes {
+    (cart_id, motopart_id) [unique]
+  }
+}
+
+Table orders {
+  id integer [primary key]
+  user_id integer [ref: > users.id]
+  status varchar(20) [default: "pending", note: "Choices: pending, confirmed, processing, shipped, delivered, cancelled, refunded"]
+  total_amount decimal(10,2)
+  shipping_address text
+  billing_address text
+  notes text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table order_items {
+  id integer [primary key]
+  order_id integer [ref: > orders.id]
+  motopart_id integer [ref: > motoparts.id]
+  quantity integer [default: 1]
+  unit_price decimal(10,2)
+  total decimal(10,2)
+  created_at timestamp
+  updated_at timestamp
+  
+  indexes {
+    (order_id, motopart_id) [unique]
+  }
+}
+
+Table transactions {
+  id integer [primary key]
+  user_id integer [ref: > users.id]
+  order_id integer [ref: > orders.id, note: "nullable"]
+  transaction_id varchar(100) [unique]
+  external_transaction_id varchar(200) [note: "From payment gateway"]
+  amount decimal(10,2)
+  currency varchar(3) [default: "USD"]
+  status varchar(20) [default: "pending", note: "Choices: pending, completed, failed, cancelled, refunded"]
+  payment_method varchar(20) [note: "Choices: credit_card, debit_card, paypal, bank_transfer, cash_on_delivery, digital_wallet"]
+  payment_gateway varchar(20) [default: "manual", note: "Choices: stripe, paypal, razorpay, square, manual"]
+  payment_reference varchar(200)
+  gateway_response json [note: "Store gateway response"]
+  created_at timestamp
+  updated_at timestamp
+  completed_at timestamp
+  description text
+  notes text
+  
+  indexes {
+    (user_id, status)
+    (transaction_id)
+    (created_at)
+  }
+}
+
+// Relationships Notes:
+// - Each category can have multiple motoparts
+// - Each user can have multiple carts, orders, and transactions
+// - Each cart can have multiple cart items
+// - Each order can have multiple order items and transactions
+// - Cart items and order items reference specific motoparts
+// - Transactions can be linked to orders (nullable for standalone transactions)

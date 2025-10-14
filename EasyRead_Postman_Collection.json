@@ -6,7 +6,7 @@
     "_postman_id": "easyread-motoparts-api",
     "version": {
       "major": 1,
-      "minor": 0,
+      "minor": 1,
       "patch": 0
     }
   },
@@ -99,7 +99,7 @@
           }
         },
         {
-          "name": "Get All Users",
+          "name": "Get All Users (Requires Auth)",
           "request": {
             "method": "GET",
             "header": [
@@ -113,7 +113,7 @@
               "host": ["{{base_url}}"],
               "path": ["users", ""]
             },
-            "description": "Get list of all users (admin only)"
+            "description": "Get list of all users (requires authentication)"
           }
         }
       ]
@@ -122,20 +122,42 @@
       "name": "Categories",
       "item": [
         {
-          "name": "Get All Categories",
+          "name": "Get All Categories (Public)",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/categories/",
+              "raw": "{{base_url}}/categories/?page=1&page_size=15&search=&ordering=-created_at",
               "host": ["{{base_url}}"],
-              "path": ["categories", ""]
+              "path": ["categories", ""],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "page_size",
+                  "value": "15",
+                  "description": "Number of items per page"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search by name or slug"
+                },
+                {
+                  "key": "ordering",
+                  "value": "-created_at",
+                  "description": "Order by: name, created_at (use - for descending)"
+                }
+              ]
             },
-            "description": "Get list of all categories"
+            "description": "Get list of all categories with pagination, search, and filtering. Public access."
           }
         },
         {
-          "name": "Create Category",
+          "name": "Create Category (Admin Only)",
           "request": {
             "method": "POST",
             "header": [
@@ -150,18 +172,18 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Engine Parts\",\n  \"slug\": \"engine-parts\",\n  \"image\": \"https://example.com/engine-parts.jpg\"\n}"
+              "raw": "{\n  \"name\": \"Engine Parts\",\n  \"slug\": \"engine-parts\",\n  \"image\": \"https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=800\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/categories/",
               "host": ["{{base_url}}"],
               "path": ["categories", ""]
             },
-            "description": "Create a new category"
+            "description": "Create a new category (Admin only)"
           }
         },
         {
-          "name": "Get Category by ID",
+          "name": "Get Category by ID (Public)",
           "request": {
             "method": "GET",
             "header": [],
@@ -170,11 +192,11 @@
               "host": ["{{base_url}}"],
               "path": ["categories", "1", ""]
             },
-            "description": "Get specific category by ID"
+            "description": "Get specific category by ID. Public access."
           }
         },
         {
-          "name": "Update Category",
+          "name": "Update Category (Admin Only)",
           "request": {
             "method": "PUT",
             "header": [
@@ -189,18 +211,44 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Updated Engine Parts\",\n  \"slug\": \"updated-engine-parts\",\n  \"image\": \"https://example.com/updated-engine-parts.jpg\"\n}"
+              "raw": "{\n  \"name\": \"Updated Engine Parts\",\n  \"slug\": \"updated-engine-parts\",\n  \"image\": \"https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=800&q=80\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/categories/1/",
               "host": ["{{base_url}}"],
               "path": ["categories", "1", ""]
             },
-            "description": "Update existing category"
+            "description": "Update existing category (Admin only)"
           }
         },
         {
-          "name": "Delete Category",
+          "name": "Partial Update Category (Admin Only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Partially Updated Engine Parts\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categories/1/",
+              "host": ["{{base_url}}"],
+              "path": ["categories", "1", ""]
+            },
+            "description": "Partially update existing category (Admin only)"
+          }
+        },
+        {
+          "name": "Delete Category (Admin Only)",
           "request": {
             "method": "DELETE",
             "header": [
@@ -214,7 +262,7 @@
               "host": ["{{base_url}}"],
               "path": ["categories", "1", ""]
             },
-            "description": "Delete category by ID"
+            "description": "Delete category by ID (Admin only)"
           }
         }
       ]
@@ -223,20 +271,62 @@
       "name": "Motoparts",
       "item": [
         {
-          "name": "Get All Motoparts",
+          "name": "Get All Motoparts (Public)",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/motoparts/",
+              "raw": "{{base_url}}/motoparts/?page=1&page_size=20&category=&status=&manufacture_year=&supplier=&search=&ordering=-created_at",
               "host": ["{{base_url}}"],
-              "path": ["motoparts", ""]
+              "path": ["motoparts", ""],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "page_size",
+                  "value": "20",
+                  "description": "Number of items per page"
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "description": "Filter by category ID"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "Filter by status (active, inactive, out_of_stock)"
+                },
+                {
+                  "key": "manufacture_year",
+                  "value": "",
+                  "description": "Filter by manufacture year"
+                },
+                {
+                  "key": "supplier",
+                  "value": "",
+                  "description": "Filter by supplier"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search by name, description, or supplier"
+                },
+                {
+                  "key": "ordering",
+                  "value": "-created_at",
+                  "description": "Order by: name, price, discounted_price, stock, manufacture_year, created_at (use - for descending)"
+                }
+              ]
             },
-            "description": "Get list of all motoparts with pagination"
+            "description": "Get list of all motoparts with pagination, search, and advanced filtering. Public access."
           }
         },
         {
-          "name": "Create Motopart",
+          "name": "Create Motopart (Admin Only)",
           "request": {
             "method": "POST",
             "header": [
@@ -251,18 +341,18 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Honda CB150R Engine Oil Filter\",\n  \"slug\": \"honda-cb150r-oil-filter\",\n  \"price\": 25.50,\n  \"discount\": 10.0,\n  \"stock\": 100,\n  \"status\": \"active\",\n  \"description\": \"High quality oil filter for Honda CB150R motorcycle\",\n  \"image_url\": \"https://example.com/oil-filter.jpg\",\n  \"category\": 1,\n  \"manufacture_year\": 2023,\n  \"supplier\": \"Honda Official\"\n}"
+              "raw": "{\n  \"name\": \"Honda CB150R Engine Oil Filter\",\n  \"slug\": \"honda-cb150r-oil-filter\",\n  \"price\": 250000,\n  \"discount\": 10.0,\n  \"stock\": 100,\n  \"status\": \"active\",\n  \"description\": \"High quality oil filter for Honda CB150R motorcycle\",\n  \"image_url\": \"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80\",\n  \"category_id\": 2,\n  \"manufacture_year\": 2024,\n  \"supplier\": \"Honda Official\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/motoparts/",
               "host": ["{{base_url}}"],
               "path": ["motoparts", ""]
             },
-            "description": "Create a new motopart"
+            "description": "Create a new motopart (Admin only)"
           }
         },
         {
-          "name": "Get Motopart by ID",
+          "name": "Get Motopart by ID (Public)",
           "request": {
             "method": "GET",
             "header": [],
@@ -271,11 +361,11 @@
               "host": ["{{base_url}}"],
               "path": ["motoparts", "1", ""]
             },
-            "description": "Get specific motopart by ID"
+            "description": "Get specific motopart by ID. Public access."
           }
         },
         {
-          "name": "Update Motopart",
+          "name": "Update Motopart (Admin Only)",
           "request": {
             "method": "PUT",
             "header": [
@@ -290,18 +380,44 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Honda CB150R Premium Engine Oil Filter\",\n  \"slug\": \"honda-cb150r-premium-oil-filter\",\n  \"price\": 30.00,\n  \"discount\": 15.0,\n  \"stock\": 150,\n  \"status\": \"active\",\n  \"description\": \"Premium quality oil filter for Honda CB150R motorcycle\",\n  \"image_url\": \"https://example.com/premium-oil-filter.jpg\",\n  \"category\": 1,\n  \"manufacture_year\": 2023,\n  \"supplier\": \"Honda Official\"\n}"
+              "raw": "{\n  \"name\": \"Honda CB150R Premium Engine Oil Filter\",\n  \"slug\": \"honda-cb150r-premium-oil-filter\",\n  \"price\": 320000,\n  \"discount\": 15.0,\n  \"stock\": 150,\n  \"status\": \"active\",\n  \"description\": \"Premium quality oil filter for Honda CB150R motorcycle\",\n  \"image_url\": \"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80\",\n  \"category_id\": 2,\n  \"manufacture_year\": 2024,\n  \"supplier\": \"Honda Official\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/motoparts/1/",
               "host": ["{{base_url}}"],
               "path": ["motoparts", "1", ""]
             },
-            "description": "Update existing motopart"
+            "description": "Update existing motopart (Admin only)"
           }
         },
         {
-          "name": "Delete Motopart",
+          "name": "Partial Update Motopart (Admin Only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 280000,\n  \"stock\": 120,\n  \"discount\": 12.0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/motoparts/1/",
+              "host": ["{{base_url}}"],
+              "path": ["motoparts", "1", ""]
+            },
+            "description": "Partially update existing motopart (Admin only)"
+          }
+        },
+        {
+          "name": "Delete Motopart (Admin Only)",
           "request": {
             "method": "DELETE",
             "header": [
@@ -315,7 +431,7 @@
               "host": ["{{base_url}}"],
               "path": ["motoparts", "1", ""]
             },
-            "description": "Delete motopart by ID"
+            "description": "Delete motopart by ID (Admin only)"
           }
         }
       ]
@@ -324,7 +440,7 @@
       "name": "Carts",
       "item": [
         {
-          "name": "Get All Carts",
+          "name": "Get All User Carts",
           "request": {
             "method": "GET",
             "header": [
@@ -338,7 +454,7 @@
               "host": ["{{base_url}}"],
               "path": ["carts", ""]
             },
-            "description": "Get list of all user's carts"
+            "description": "Get list of all current user's carts (requires authentication)"
           }
         },
         {
@@ -356,7 +472,7 @@
               "host": ["{{base_url}}"],
               "path": ["carts", "create", ""]
             },
-            "description": "Create a new cart for current user"
+            "description": "Create a new cart for current user (requires authentication)"
           }
         },
         {
@@ -374,7 +490,7 @@
               "host": ["{{base_url}}"],
               "path": ["carts", "active", ""]
             },
-            "description": "Get current user's active cart"
+            "description": "Get current user's active cart (requires authentication)"
           }
         },
         {
@@ -392,7 +508,7 @@
               "host": ["{{base_url}}"],
               "path": ["carts", "1", ""]
             },
-            "description": "Get specific cart by ID"
+            "description": "Get specific cart by ID (requires authentication)"
           }
         },
         {
@@ -410,7 +526,7 @@
               "host": ["{{base_url}}"],
               "path": ["carts", "1", "checkout", ""]
             },
-            "description": "Checkout cart and create order"
+            "description": "Checkout cart and create order (requires authentication)"
           }
         }
       ]
@@ -433,7 +549,7 @@
               "host": ["{{base_url}}"],
               "path": ["cartitems", "cart", "1", "items", ""]
             },
-            "description": "Get all items in specific cart"
+            "description": "Get all items in specific cart (requires authentication)"
           }
         },
         {
@@ -459,7 +575,7 @@
               "host": ["{{base_url}}"],
               "path": ["cartitems", "cart", "1", "add", ""]
             },
-            "description": "Add motopart to cart"
+            "description": "Add motopart to cart (requires authentication)"
           }
         },
         {
@@ -477,7 +593,7 @@
               "host": ["{{base_url}}"],
               "path": ["cartitems", "cart", "1", "items", "1", ""]
             },
-            "description": "Get specific cart item detail"
+            "description": "Get specific cart item detail (requires authentication)"
           }
         },
         {
@@ -503,7 +619,7 @@
               "host": ["{{base_url}}"],
               "path": ["cartitems", "cart", "1", "items", "1", "update", ""]
             },
-            "description": "Update quantity of specific cart item"
+            "description": "Update quantity of specific cart item (requires authentication)"
           }
         },
         {
@@ -521,7 +637,7 @@
               "host": ["{{base_url}}"],
               "path": ["cartitems", "cart", "1", "items", "1", "remove", ""]
             },
-            "description": "Remove specific item from cart"
+            "description": "Remove specific item from cart (requires authentication)"
           }
         },
         {
@@ -539,7 +655,7 @@
               "host": ["{{base_url}}"],
               "path": ["cartitems", "cart", "1", "clear", ""]
             },
-            "description": "Clear all items from cart"
+            "description": "Clear all items from cart (requires authentication)"
           }
         }
       ]
@@ -562,7 +678,7 @@
               "host": ["{{base_url}}"],
               "path": ["orders", ""]
             },
-            "description": "Get list of all orders"
+            "description": "Get list of all orders (requires authentication)"
           }
         },
         {
@@ -588,7 +704,7 @@
               "host": ["{{base_url}}"],
               "path": ["orders", ""]
             },
-            "description": "Create a new order"
+            "description": "Create a new order (requires authentication)"
           }
         },
         {
@@ -606,7 +722,7 @@
               "host": ["{{base_url}}"],
               "path": ["orders", "1", ""]
             },
-            "description": "Get specific order by ID"
+            "description": "Get specific order by ID (requires authentication)"
           }
         },
         {
@@ -624,7 +740,7 @@
               "host": ["{{base_url}}"],
               "path": ["orders", "me", ""]
             },
-            "description": "Get current user's orders"
+            "description": "Get current user's orders (requires authentication)"
           }
         },
         {
@@ -642,7 +758,7 @@
               "host": ["{{base_url}}"],
               "path": ["orders", "admin", ""]
             },
-            "description": "Get all orders (admin only)"
+            "description": "Get all orders - Admin only (requires authentication)"
           }
         },
         {
@@ -668,7 +784,7 @@
               "host": ["{{base_url}}"],
               "path": ["orders", "1", "status", ""]
             },
-            "description": "Update order status (admin only)"
+            "description": "Update order status - Admin only (requires authentication)"
           }
         }
       ]
@@ -691,7 +807,7 @@
               "host": ["{{base_url}}"],
               "path": ["orderitems", ""]
             },
-            "description": "Get list of order items"
+            "description": "Get list of order items (requires authentication)"
           }
         }
       ]
@@ -714,7 +830,7 @@
               "host": ["{{base_url}}"],
               "path": ["transactions", ""]
             },
-            "description": "Get list of transactions"
+            "description": "Get list of transactions (requires authentication)"
           }
         }
       ]
