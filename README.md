@@ -90,6 +90,27 @@ Script sẽ hỏi bạn có muốn xóa dữ liệu cũ không:
 
 ### Dữ liệu mẫu bao gồm:
 
+#### Test User Accounts:
+
+Sau khi import dữ liệu mẫu, bạn có thể đăng nhập với các tài khoản sau:
+
+- **Admin Account**:
+
+  - Email: `admin@easyread.com`
+  - Password: `admin123`
+  - Role: admin (có quyền truy cập Django Admin)
+
+- **Regular User Account**:
+
+  - Email: `user@easyread.com`
+  - Password: `user123`
+  - Role: user
+
+- **Test Customer Account**:
+  - Email: `customer@test.com`
+  - Password: `user123`
+  - Role: user
+
 #### 8 Danh mục sản phẩm:
 
 1. Phụ tùng động cơ
@@ -115,14 +136,22 @@ Script sẽ hỏi bạn có muốn xóa dữ liệu cũ không:
 ### Kiểm tra dữ liệu đã import
 
 ```bash
-# Kiểm tra số lượng categories và motoparts
+# Kiểm tra số lượng users, categories và motoparts
 python manage.py shell -c "
+from user.models import CustomUser
 from category.models import Category
 from motopart.models import Motopart
+print(f'Users: {CustomUser.objects.count()}')
 print(f'Categories: {Category.objects.count()}')
 print(f'Motoparts: {Motopart.objects.count()}')
 "
 ```
+
+### Test Login với Django Admin
+
+Sau khi import dữ liệu, bạn có thể truy cập Django Admin tại: http://127.0.0.1:8000/admin/
+
+- Đăng nhập với tài khoản admin: `admin@easyread.com` / `admin123`
 
 ## 🔧 Cấu hình phát triển
 

@@ -2,6 +2,20 @@
 """
 Sample Data Import Script for EasyRead Motoparts
 Converts the MySQL sample data to work with SQLite3 using Django ORM
+
+This script imports:
+- Sample users (admin and regular users) with login credentials
+- Sample categories for motoparts
+- Sample motoparts data
+
+Test Accounts Created:
+- Admin: admin@easyread.com / admin123 (role: admin)
+- User: user@easyread.com / user123 (role: user)  
+- Customer: customer@test.com / user123 (role: user)
+
+Usage:
+  python manage.py migrate  # Run migrations first
+  python import_sample_data.py
 """
 
 import os
@@ -16,13 +30,81 @@ django.setup()
 
 from category.models import Category
 from motopart.models import Motopart
+from user.models import CustomUser
 
 def clear_existing_data():
     """Clear existing data (optional)"""
     print("Clearing existing data...")
     Motopart.objects.all().delete()
     Category.objects.all().delete()
+    CustomUser.objects.all().delete()
     print("✓ Existing data cleared")
+
+def import_users():
+    """Import sample users"""
+    print("Importing users...")
+    
+    # Create admin user
+    admin_user, created = CustomUser.objects.get_or_create(
+        email='admin@easyread.com',
+        defaults={
+            'username': 'admin',
+            'first_name': 'Admin',
+            'last_name': 'EasyRead',
+            'role': 'admin',
+            'is_staff': True,
+            'is_superuser': True,
+            'is_active': True,
+        }
+    )
+    if created:
+        admin_user.set_password('admin123')
+        admin_user.save()
+        print("✓ Admin user created: admin@easyread.com / admin123")
+    else:
+        print("✓ Admin user already exists")
+    
+    # Create regular user
+    regular_user, created = CustomUser.objects.get_or_create(
+        email='user@easyread.com',
+        defaults={
+            'username': 'user',
+            'first_name': 'User',
+            'last_name': 'Normal',
+            'role': 'user',
+            'is_staff': False,
+            'is_superuser': False,
+            'is_active': True,
+        }
+    )
+    if created:
+        regular_user.set_password('user123')
+        regular_user.save()
+        print("✓ Regular user created: user@easyread.com / user123")
+    else:
+        print("✓ Regular user already exists")
+    
+    # Create test customer
+    customer_user, created = CustomUser.objects.get_or_create(
+        email='customer@test.com',
+        defaults={
+            'username': 'customer',
+            'first_name': 'Nguyễn',
+            'last_name': 'Văn A',
+            'role': 'user',
+            'is_staff': False,
+            'is_superuser': False,
+            'is_active': True,
+        }
+    )
+    if created:
+        customer_user.set_password('user123')
+        customer_user.save()
+        print("✓ Test customer created: customer@test.com / user123")
+    else:
+        print("✓ Test customer already exists")
+    
+    print("✓ Users imported successfully")
 
 def import_categories():
     """Import sample categories"""
@@ -524,14 +606,38 @@ def print_summary():
     print("\n" + "="*60)
     print("IMPORT SUMMARY")
     print("="*60)
+    print(f"Total users: {CustomUser.objects.count()}")
     print(f"Total categories: {Category.objects.count()}")
     print(f"Total motoparts: {Motopart.objects.count()}")
+    
+    print("\nUsers by role:")
+    for role in ['admin', 'user']:
+        count = CustomUser.objects.filter(role=role).count()
+        print(f"  {role.capitalize()}: {count} users")
+    
     print("\nMotoparts by category:")
     
     for category in Category.objects.all():
         count = category.motoparts.count() # type: ignore
         print(f"  {category.name}: {count} motoparts")
     
+    print("\n" + "="*60)
+    print("TEST LOGIN ACCOUNTS:")
+    print("="*60)
+    print("Admin Account:")
+    print("  Email: admin@easyread.com")
+    print("  Password: admin123")
+    print("  Role: admin")
+    print()
+    print("Regular User Account:")
+    print("  Email: user@easyread.com") 
+    print("  Password: user123")
+    print("  Role: user")
+    print()
+    print("Test Customer Account:")
+    print("  Email: customer@test.com")
+    print("  Password: user123")
+    print("  Role: user")
     print("="*60)
     print("Sample data import completed successfully! ✓")
 
@@ -547,6 +653,7 @@ def main():
             clear_existing_data()
         
         # Import data
+        import_users()
         import_categories()
         import_motoparts()
         

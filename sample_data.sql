@@ -1,13 +1,40 @@
 -- ============================================================
 -- EasyRead Motoparts - Sample Data SQL Script (MySQL Version)
 -- ============================================================
--- This script inserts sample data for categories and motoparts
--- Run with: mysql -u username -p database_name < sample_data.sql
+-- This script inserts sample data for users, categories and motoparts
+-- 
+-- IMPORTANT: Run this after Django migrations are complete!
+-- 
+-- Usage:
+--   1. Apply Django migrations first: python manage.py migrate
+--   2. Run with: mysql -u username -p database_name < sample_data.sql
+--   
+-- Test Accounts Created:
+--   Admin: admin@easyread.com / admin123
+--   User:  user@easyread.com / user123
+--   Customer: customer@test.com / user123
 -- ============================================================
 
 -- Clear existing data (optional - comment out if you want to keep existing data)
 -- DELETE FROM motopart_motopart;
 -- DELETE FROM category_category;
+-- DELETE FROM user_customuser;
+
+-- ============================================================
+-- USERS (Admin and Regular User accounts)
+-- ============================================================
+
+REPLACE INTO user_customuser 
+(id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email, role) 
+VALUES
+-- Admin user: email=admin@easyread.com, password=admin123, role=admin
+(1, 'pbkdf2_sha256$1000000$8dYOeWExBgatUVaM1Z7hCV$q0aodWeVxDB5mh6leOBHitF92lDdyA+5zJycWXepgGI=', NULL, 1, 'admin', 'Admin', 'EasyRead', 1, 1, NOW(), 'admin@easyread.com', 'admin'),
+
+-- Regular user: email=user@easyread.com, password=user123, role=user  
+(2, 'pbkdf2_sha256$1000000$BR65rFJndf5osKHo0ARYT1$XlxKsVpHt313ZimN8ixYk643Ct7oZO9JWz8rdl35fMg=', NULL, 0, 'user', 'User', 'Normal', 0, 1, NOW(), 'user@easyread.com', 'user'),
+
+-- Test customer: email=customer@test.com, password=user123, role=user
+(3, 'pbkdf2_sha256$1000000$BR65rFJndf5osKHo0ARYT1$XlxKsVpHt313ZimN8ixYk643Ct7oZO9JWz8rdl35fMg=', NULL, 0, 'customer', 'Nguyễn', 'Văn A', 0, 1, NOW(), 'customer@test.com', 'user');
 
 -- ============================================================
 -- CATEGORIES
@@ -191,15 +218,36 @@ VALUES
 -- Reset AUTO_INCREMENT (MySQL)
 -- ============================================================
 -- Uncomment if you need to reset AUTO_INCREMENT counters
+-- ALTER TABLE user_customuser AUTO_INCREMENT = 4;
 -- ALTER TABLE category_category AUTO_INCREMENT = 9;
 -- ALTER TABLE motopart_motopart AUTO_INCREMENT = 28;
 
 -- ============================================================
 -- Verification queries
 -- ============================================================
+-- SELECT COUNT(*) as total_users FROM user_customuser;
 -- SELECT COUNT(*) as total_categories FROM category_category;
 -- SELECT COUNT(*) as total_motoparts FROM motopart_motopart;
 -- SELECT c.name, COUNT(m.id) as motoparts_count
 -- FROM category_category c
 -- LEFT JOIN motopart_motopart m ON c.id = m.category_id
 -- GROUP BY c.id, c.name;
+
+-- ============================================================
+-- Test Login Information
+-- ============================================================
+-- Admin Account:
+--   Email: admin@easyread.com
+--   Password: admin123
+--   Role: admin
+--   
+-- Regular User Account:
+--   Email: user@easyread.com
+--   Password: user123
+--   Role: user
+--
+-- Test Customer Account:
+--   Email: customer@test.com
+--   Password: user123
+--   Role: user
+-- ============================================================
