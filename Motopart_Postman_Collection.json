@@ -13,21 +13,26 @@
   "variable": [
     {
       "key": "base_url",
-      "value": "http://localhost:8000",
+      "value": "http://127.0.0.1:8000",
       "type": "string"
     },
     {
       "key": "auth_token",
-      "value": "",
+      "value": "821543accfd90e262ca6d4c1ec7738e9b3d7d22f",
       "type": "string"
     }
   ],
   "auth": {
-    "type": "bearer",
-    "bearer": [
+    "type": "apikey",
+    "apikey": [
       {
-        "key": "token",
-        "value": "{{auth_token}}",
+        "key": "value",
+        "value": "Token {{auth_token}}",
+        "type": "string"
+      },
+      {
+        "key": "key",
+        "value": "Authorization",
         "type": "string"
       }
     ]
@@ -60,6 +65,24 @@
         },
         {
           "name": "User Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Auto-save token to collection variable",
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.token) {",
+                  "        pm.collectionVariables.set('auth_token', jsonData.token);",
+                  "        console.log('Token saved:', jsonData.token);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -70,14 +93,14 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"SecurePassword123!\"\n}"
+              "raw": "{\n  \"email\": \"admin@yopmail.com\",\n  \"password\": \"admin123\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/users/login/",
               "host": ["{{base_url}}"],
               "path": ["users", "login", ""]
             },
-            "description": "Login user and get authentication token"
+            "description": "Login user and get authentication token. Token will be automatically saved to collection variable."
           }
         },
         {
@@ -87,7 +110,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -105,7 +128,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -167,7 +190,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
@@ -206,7 +229,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
@@ -232,7 +255,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
@@ -254,7 +277,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -336,7 +359,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
@@ -375,7 +398,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
@@ -401,7 +424,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
@@ -423,7 +446,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -446,7 +469,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -464,7 +487,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -482,7 +505,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -500,7 +523,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -518,7 +541,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -541,7 +564,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -563,7 +586,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
@@ -585,7 +608,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -607,7 +630,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
@@ -629,7 +652,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -647,7 +670,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -670,7 +693,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -692,7 +715,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
@@ -714,7 +737,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -732,7 +755,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -750,7 +773,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -772,7 +795,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "body": {
@@ -799,7 +822,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
@@ -822,7 +845,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
+                "value": "Token {{auth_token}}"
               }
             ],
             "url": {
